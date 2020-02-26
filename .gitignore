@@ -157,8 +157,11 @@ products.json
 shop.json
 
 # migrations
-*/migrations/
+*/migrations/__pycache__/
 # End of https://www.gitignore.io/api/django
+
+# data files
+datafiles/
 
 #vscode
 .vscode/

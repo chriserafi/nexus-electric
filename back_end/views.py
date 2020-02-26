@@ -15,13 +15,29 @@ class ActualTotalLoadViewSet(GetOnlyModelViewSet):
 	serializer_class = MapCodeSerializer
 
 	def date(self, request, area_name, resolution, date):
-		return Response("Hallo World!")
+		year, month, day = date.split('-')
+		queryset = ActualTotalLoad.objects.filter(AreaName=area_name, ResolutionCodeId__ResolutionCodeText=resolution, Year=year, Month=month, Day=day)
+		if not queryset:
+			return Response({"No data"}, status=403)
+		serializer = ActualTotalLoadSerializer(queryset, many=True, context = {
+			'area_name' : area_name,
+			'dataset' : "ActualTotalLoad",
+			'date' : date
+		})
+		return Response(serializer.data)
 	
 	def month(self, request, area_name, resolution, date):
 		return Response("Hallo World!")
 	
 	def year(self, request, area_name, resolution, date):
 		return Response("Hallo World!")
+
+
+#MapCodeViewSet
+class MapCodeViewSet(viewsets.ModelViewSet):
+	queryset = MapCode.objects.all()
+	serializer_class = MapCodeSerializer
+
 
 #DayAheadTotalLoadForecastViewSet
 class DayAheadTotalLoadForecastViewSet(GetOnlyModelViewSet):
@@ -54,7 +70,7 @@ class ActualvsForecastViewSet(GetOnlyModelViewSet):
 #AggregatedGenerationPerTypeViewSet
 class AggregatedGenerationPerTypeViewSet(GetOnlyModelViewSet):
 	queryset = MapCode.objects.all()
-	serializer_class = MapCodeSerializer
+	serializer_class = MapCodeSerializer(queryset, many=True)
 
 	def date(self, request, area_name, production_type, resolution, date):
 		return Response("Hallo World!")

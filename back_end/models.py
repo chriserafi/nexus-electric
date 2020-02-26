@@ -60,7 +60,8 @@ class AllocatedEICDetail(models.Model):
     Description = models.CharField(max_length=255, blank=True, null=True)
     EICParentMarketDocumentMRID = models.CharField(max_length=250, blank=True, null=True)
     ELCResponsibleMarketParticipantMRID = models.CharField(max_length=250, blank=True, null=True)
-    IsDeleted = models.BooleanField()  # This field type is a guess.
+    IsDeleted = models.BooleanField()
+    AllocatedEICID = models.IntegerField()
 
 
 class AreaTypeCode(models.Model):
