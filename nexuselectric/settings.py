@@ -10,7 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
-import os
+import os, platform
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -76,8 +76,20 @@ WSGI_APPLICATION = 'nexuselectric.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
-
-DATABASES = {
+# specific changes for WSL
+if('microsoft' in platform.release()):
+    DATABASES = {
+        'default': {
+            'NAME': 'energy',
+            'ENGINE': 'django.db.backends.mysql',
+            'USER': 'django',
+            'PASSWORD': 'XR^Sq@!KhQw%8A6W',
+            'HOST':'0.0.0.0',
+            'PORT':'3306',
+        }
+    }
+else:
+    DATABASES = {
     'default': {
         'NAME': 'energy',
         'ENGINE': 'django.db.backends.mysql',
@@ -85,8 +97,8 @@ DATABASES = {
         'PASSWORD': 'XR^Sq@!KhQw%8A6W',
         'HOST':'127.0.0.1',
         'PORT':'3306',
+        }
     }
-}
 
 
 # Password validation
