@@ -1,4 +1,8 @@
 from django.db import models
+#from django.contrib.auth.models import User
+
+# class NexusUser(User):
+#     Quotas = models.
 
 
 class ActualTotalLoad(models.Model):
@@ -6,7 +10,7 @@ class ActualTotalLoad(models.Model):
     EntityCreatedAt = models.DateTimeField()
     EntityModifiedAt = models.DateTimeField()
     ActionTaskID = models.BigIntegerField()
-    Status = models.CharField(max_length=2, blank=True, null=True)
+    Status = models.CharField(max_length=10, blank=True, null=True)
     Year = models.IntegerField()
     Month = models.IntegerField()
     Day = models.IntegerField()
@@ -26,7 +30,7 @@ class AggregatedGenerationPerType(models.Model):
     EntityCreatedAt = models.DateTimeField()
     EntityModifiedAt = models.DateTimeField()
     ActionTaskID = models.BigIntegerField()
-    Status = models.CharField(max_length=2, blank=True, null=True)
+    Status = models.CharField(max_length=10, blank=True, null=True)
     Year = models.IntegerField()
     Month = models.IntegerField()
     Day = models.IntegerField()
@@ -77,7 +81,7 @@ class DayAheadTotalLoadForecast(models.Model):
     EntityCreatedAt = models.DateTimeField()
     EntityModifiedAt = models.DateTimeField()
     ActionTaskID = models.BigIntegerField()
-    Status = models.CharField(max_length=2, blank=True, null=True)
+    Status = models.CharField(max_length=10, blank=True, null=True)
     Year = models.IntegerField()
     Month = models.IntegerField()
     Day = models.IntegerField()

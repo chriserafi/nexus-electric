@@ -1,13 +1,9 @@
 from rest_framework.routers import Route, DynamicRoute, SimpleRouter
-from string import Template
-
-def _f(url):
-	return Template(url).substitute(LT = '[a-zA-Z]+', LTD = '[a-zA-Z0-9]+', YYYY = '\d\d\d\d', MM = '(0[1-9]|1[0-2])', DD = '([0-2]\d|3[0-1])')
 
 class ApiRouter(SimpleRouter):
 	routes = [
 		Route(
-			url=_f(r'^{prefix}/(?P<area_name>$LT)/(?P<resolution>$LTD)/date/(?P<date>$YYYY-$MM-$DD)$$'),
+			url=r'^{prefix}/(?P<area_name>.*)/(?P<resolution>.*)/date/(?P<date>.*)$',
 			mapping = {'get' : 'date'},
 			name='{basename}-date',
 			detail=False,
@@ -15,7 +11,7 @@ class ApiRouter(SimpleRouter):
 		),
 		
 		Route(
-			url=_f(r'^{prefix}/(?P<area_name>$LT)/(?P<resolution>$LTD)/month/(?P<date>$YYYY-$MM)$$'),
+			url=r'^{prefix}/(?P<area_name>.*)/(?P<resolution>.*)/month/(?P<date>.*)$',
 			mapping = {'get' : 'month'},
 			name='{basename}-month',
 			detail=False,
@@ -23,7 +19,7 @@ class ApiRouter(SimpleRouter):
 		),
 		
 		Route(
-			url=_f(r'^{prefix}/(?P<area_name>$LT)/(?P<resolution>$LTD)/year/(?P<date>$YYYY)$$'),
+			url=r'^{prefix}/(?P<area_name>.*)/(?P<resolution>.*)/year/(?P<date>.*)$',
 			mapping = {'get' : 'year'},
 			name='{basename}-year',
 			detail=False,
@@ -31,10 +27,13 @@ class ApiRouter(SimpleRouter):
 		)
 	]
 
+	def get_default_basename(self, viewset):
+		return viewset.__name__
+
 class ApiRouterExtended(SimpleRouter):
 	routes = [
 		Route(
-			url=_f(r'^{prefix}/(?P<area_name>$LT)/(?P<production_type>$LT)/(?P<resolution>$LTD)/date/(?P<date>$YYYY-$MM-$DD)$$'),
+			url=r'^{prefix}/(?P<area_name>.*)/(?P<production_type>.*)/(?P<resolution>.*)/date/(?P<date>.*)$',
 			mapping = {'get' : 'date'},
 			name='{basename}-date',
 			detail=False,
@@ -42,7 +41,7 @@ class ApiRouterExtended(SimpleRouter):
 		),
 		
 		Route(
-			url=_f(r'^{prefix}/(?P<area_name>$LT)/(?P<production_type>$LT)/(?P<resolution>$LTD)/month/(?P<date>$YYYY-$MM)$$'),
+			url=r'^{prefix}/(?P<area_name>.*)/(?P<production_type>.*)/(?P<resolution>.*)/month/(?P<date>.*)$',
 			mapping = {'get' : 'month'},
 			name='{basename}-month',
 			detail=False,
@@ -50,13 +49,16 @@ class ApiRouterExtended(SimpleRouter):
 		),
 		
 		Route(
-			url=_f(r'^{prefix}/(?P<area_name>$LT)/(?P<production_type>$LT)/(?P<resolution>$LTD)/year/(?P<date>$YYYY)$$'),
+			url=r'^{prefix}/(?P<area_name>.*)/(?P<production_type>.*)/(?P<resolution>.*)/year/(?P<date>.*)$',
 			mapping = {'get' : 'year'},
 			name='{basename}-year',
 			detail=False,
 			initkwargs={}
 		)
 	]
+
+	def get_default_basename(self, viewset):
+		return viewset.__name__
 
 class AdminRouter(SimpleRouter):
 	routes = [
@@ -83,3 +85,6 @@ class AdminRouter(SimpleRouter):
 			initkwargs={}
 		)
 	]
+
+	def get_default_basename(self, viewset):
+		return viewset.__name__

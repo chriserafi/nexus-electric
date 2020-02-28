@@ -145,5 +145,6 @@ REST_FRAMEWORK = {
 		'rest_framework.renderers.BrowsableAPIRenderer', #this has to be removed for final exams
 		'rest_framework.renderers.JSONRenderer',
 		'rest_framework_csv.renderers.CSVRenderer',
-	]
+	],
+    'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S.%f', 
 }
