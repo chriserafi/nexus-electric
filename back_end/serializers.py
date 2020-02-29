@@ -6,7 +6,6 @@ import datetime
 class BaseDatasetSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
-        #fields_include = kwargs.pop('include', {})
         fields_exclude = kwargs.pop('exclude', {})
         super(BaseDatasetSerializer, self).__init__(*args, **kwargs)
         
@@ -15,25 +14,14 @@ class BaseDatasetSerializer(serializers.ModelSerializer):
     
     Source = serializers.ReadOnlyField(default="entso-e")
     Dataset = serializers.ReadOnlyField(default="Dataset")
-    # Id = serializers.IntegerField(write_only=True)
-    # EtityCreatedAt = serializers.DateTimeField(write_only=True)
-    # EntityModifiedAt = serializers.DateTimeField(write_only=True)
-    # ActionTaskID = serializers.IntegerField(write_only=True)
-    # Status = serializers.CharField(write_only=True)
-    # Year = serializers.IntegerField(write_only=True)
-    # Month = serializers.IntegerField(write_only=True)
-    # Day = serializers.IntegerField(write_only=True)
-    # DateTime = serializers.DateTimeField(write_only=True, format="%Y-%m-%d %H:%M:%S.%f")
     DateTimeUTC = serializers.DateTimeField(read_only=True, source="DateTime", format="%Y-%m-%d %H:%M:%S.%f")
-    # AreaName = serializers.CharField(write_only=True)
-    # UpdateTime =  serializers.DateTimeField(write_only=True, format="%Y-%m-%d %H:%M:%S.%f")
-
-
     UpdateTimeUTC = serializers.DateTimeField(read_only=True, source="UpdateTime", format="%Y-%m-%d %H:%M:%S.%f")
-    AreaTypeCode = serializers.SlugRelatedField(read_only=True, source="AreaTypeCodeId", slug_field="AreaTypeCodeText")
-    MapCode = serializers.SlugRelatedField(read_only=True, source="MapCodeId", slug_field="MapCodeText")
-    ResolutionCode = serializers.SlugRelatedField(read_only=True, source="ResolutionCodeId", slug_field="ResolutionCodeText")
-    # RowHash = serializers.CharField(write_only=True)
+    #AreaTypeCode = serializers.SlugRelatedField(read_only=True, source="AreaTypeCodeId", slug_field="AreaTypeCodeText")
+    AreaTypeCode = serializers.CharField(read_only=True, source="AreaTypeCodeId__AreaTypeCodeText")
+    #MapCode = serializers.SlugRelatedField(read_only=True, source="MapCodeId", slug_field="MapCodeText")
+    MapCode = serializers.CharField(read_only=True, source="MapCodeId__MapCodeText")
+    #ResolutionCode = serializers.SlugRelatedField(read_only=True, source="ResolutionCodeId", slug_field="ResolutionCodeText")
+    ResolutionCode = serializers.CharField(read_only=True, source="ResolutionCodeId__ResolutionCodeText")
 
 # Actual Total Load
 class ActualTotalLoadSerializer(BaseDatasetSerializer):
@@ -60,24 +48,42 @@ class ActualTotalLoadSerializer(BaseDatasetSerializer):
         data['ResolutionCodeId'] = ResolutionCode.objects.get(Id=data['ResolutionCodeId'])
         data['EntityCreatedAt'] = datetime.datetime.strptime((tmpcreate[:26]+tmpcreate[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f %z')
         data['EntityModifiedAt'] = datetime.datetime.strptime((tmpmodified[:26]+tmpmodified[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f %z')
-        data['EntityModifiedAt'] = datetime.datetime.strptime((tmpdatetime[:26]+tmpdatetime[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f')
-        data['EntityModifiedAt'] = datetime.datetime.strptime((tmpupdatime[:26]+tmpupdatime[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f')
+        data['DateTime'] = datetime.datetime.strptime((tmpdatetime[:26]+tmpdatetime[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f')
+        data['DateTime'] = data['DateTime'].replace(tzinfo=datetime.timezone.utc)
+        data['UpdateTime'] = datetime.datetime.strptime((tmpupdatime[:26]+tmpupdatime[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f')
+        data['UpdateTime'] = data['UpdateTime'].replace(tzinfo=datetime.timezone.utc)
         
         return data
     class Meta:
         model = ActualTotalLoad
         fields = ['Source', 'Dataset', 'AreaName', 'AreaTypeCode', 'MapCode', 
-                'ResolutionCode','Year', 'Month', 'Day', 'DateTimeUTC', 'ActualTotalLoadValue', 
+                'ResolutionCode', 'Year', 'Month', 'Day', 'DateTimeUTC', 'ActualTotalLoadValue', 
                 'ActualTotalLoadByDayValue', 'ActualTotalLoadByMonthValue', 'UpdateTimeUTC']
 
 # Day Ahead Total Load Forecast
 class DayAheadTotalLoadForecastSerializer(BaseDatasetSerializer):
-    DayAheadTotalLoadForecastValue = serializers.FloatField(read_only=True, source="TotalLoadValue")
-    DayAheadTotalLoadForecastByDayValue = serializers.FloatField(read_only=True, source="TotalLoadValue")
-    DayAheadTotalLoadForecastByMonthValue = serializers.FloatField(read_only=True, source="TotalLoadValue")
+    DayAheadTotalLoadForecastValue = serializers.FloatField(read_only=True, source="TotalLoadValue", required=False)
+    DayAheadTotalLoadForecastByDayValue = serializers.FloatField(read_only=True, required=False)
+    DayAheadTotalLoadForecastByMonthValue = serializers.FloatField(read_only=True, required=False)
     
+    def to_internal_value(self, data):
+        tmpcreate = data['EntityCreatedAt']
+        tmpmodified = data['EntityModifiedAt']
+        tmpdatetime = data['DateTime']
+        tmpupdatime = data['UpdateTime']
+        data['AreaTypeCodeId'] = AreaTypeCode.objects.get(Id=data['AreaTypeCodeId'])
+        data['MapCodeId'] = MapCode.objects.get(Id=data['MapCodeId'])
+        data['AreaCodeId'] = AllocatedEICDetail.objects.get(Id=data['AreaCodeId'])
+        data['ResolutionCodeId'] = ResolutionCode.objects.get(Id=data['ResolutionCodeId'])
+        data['EntityCreatedAt'] = datetime.datetime.strptime((tmpcreate[:26]+tmpcreate[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f %z')
+        data['EntityModifiedAt'] = datetime.datetime.strptime((tmpmodified[:26]+tmpmodified[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f %z')
+        data['DateTime'] = datetime.datetime.strptime((tmpdatetime[:26]+tmpdatetime[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f')
+        data['DateTime'] = data['DateTime'].replace(tzinfo=datetime.timezone.utc)
+        data['UpdateTime'] = datetime.datetime.strptime((tmpupdatime[:26]+tmpupdatime[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f')
+        data['UpdateTime'] = data['UpdateTime'].replace(tzinfo=datetime.timezone.utc)
+        return data
     class Meta:
-        #model = DayAheadTotalLoadForecast
+        model = DayAheadTotalLoadForecast
         fields = ['Source', 'Dataset', 'AreaName', 'AreaTypeCode', 
                 'MapCode', 'ResolutionCode', 'Year', 'Month', 'Day', 
                 'DateTimeUTC', 'DayAheadTotalLoadForecastValue', 'DayAheadTotalLoadForecastByDayValue', 
@@ -85,21 +91,42 @@ class DayAheadTotalLoadForecastSerializer(BaseDatasetSerializer):
 
 # Actual vs Forecast
 class ActualvsForecastSerializer(BaseDatasetSerializer):
-    # DayAheadTotalLoadForecastValue = serializers.FloatField(read_only=True, source="TotalLoadValue")
-    # ActualTotalLoadValue = serializers.FloatField(read_only=True, source="TotalLoadValue", required=False)
+    DayAheadTotalLoadForecastValue = serializers.FloatField(read_only=True, source="ForecastValue")
+    ActualTotalLoadValue = serializers.FloatField(read_only=True, source="TotalLoadValue")
 
     class Meta:
-        #model = ActualvsForecast
-        fields = ['Source', 'Dataset', 'AreaName', 'AreaTypeCode', 
-                'MapCode', 'ResolutionCode', 'Year', 'Month', 'Day', 
-                'DateTimeUTC', 'DayAheadTotalLoadForecastValue', 'ActualTotalLoadValue']
+        model = ActualvsForecast
+        # fields = ['Source', 'Dataset', 'AreaName', 'AreaTypeCode', 
+        #         'MapCode', 'ResolutionCode', 'Year', 'Month', 'Day', 
+        #         'DateTimeUTC', 'DayAheadTotalLoadForecastValue', 'ActualTotalLoadValue']
+        fields = '__all__'
 
 # Aggregated Generation Per Type
 class AggregatedGenerationPerTypeSerializer(BaseDatasetSerializer):
-    ActualGenerationOutputValue = serializers.FloatField(read_only=True,source="ActualGenerationOutput")
-    ProductionType = serializers.SlugRelatedField(read_only=True, source="ProductionTypeId", slug_field="ProductionTypeText")
+    ProductionType = serializers.CharField(read_only=True, source="ProductionTypeId__ProductionTypeText")
+    ActualGenerationOutputValue = serializers.FloatField(read_only=True, source="ActualGenerationOutput", required=False)
     ActualGenerationOutputByDayValue = serializers.FloatField(read_only=True, required=False)
     ActualGenerationOutputByMonthValue = serializers.FloatField(read_only=True, required=False)
+
+    def to_internal_value(self, data):
+        tmpcreate = data['EntityCreatedAt']
+        tmpmodified = data['EntityModifiedAt']
+        tmpdatetime = data['DateTime']
+        tmpupdatime = data['UpdateTime']
+        data['ProductionTypeId'] = ProductionType.objects.get(Id=data['AreaTypeCodeId'])
+        data['AreaTypeCodeId'] = AreaTypeCode.objects.get(Id=data['AreaTypeCodeId'])
+        data['MapCodeId'] = MapCode.objects.get(Id=data['MapCodeId'])
+        data['AreaCodeId'] = AllocatedEICDetail.objects.get(Id=data['AreaCodeId'])
+        data['ResolutionCodeId'] = ResolutionCode.objects.get(Id=data['ResolutionCodeId'])
+
+        data['EntityCreatedAt'] = datetime.datetime.strptime((tmpcreate[:26]+tmpcreate[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f %z')
+        data['EntityModifiedAt'] = datetime.datetime.strptime((tmpmodified[:26]+tmpmodified[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f %z')
+        data['DateTime'] = datetime.datetime.strptime((tmpdatetime[:26]+tmpdatetime[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f')
+        data['DateTime'] = data['DateTime'].replace(tzinfo=datetime.timezone.utc)
+        data['UpdateTime'] = datetime.datetime.strptime((tmpupdatime[:26]+tmpupdatime[27:]).strip(), '%Y-%m-%d  %H:%M:%S.%f')
+        data['UpdateTime'] = data['UpdateTime'].replace(tzinfo=datetime.timezone.utc)
+
+        return data
     
     class Meta:
         model = AggregatedGenerationPerType

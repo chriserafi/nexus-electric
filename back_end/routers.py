@@ -64,22 +64,22 @@ class AdminRouter(SimpleRouter):
 	routes = [
 		Route(
 			url=r'^{prefix}/users$',
-			mapping={'get' : 'list'},
+			mapping={'post' : 'create'},
 			name='{basename}-list',
 			detail=False,
 			initkwargs={'suffix': 'List'}
 		),
 		
 		Route(
-			url=r'^{prefix}/users/(?P<username>[a-zA-Z]+)$',
-			mapping={'get' : 'retrieve'},
+			url=r'^{prefix}/users/(?P<username>.*)$',
+			mapping={'get' : 'retrieve', 'put' : 'update'},
 			name='{basename}-detail',
-			detail=True,
+			detail=False,
 			initkwargs={'suffix': 'List'}
 		),
 		
 		DynamicRoute(
-			url=r'^{prefix}/{url_path}$',
+			url=r'^{prefix}/{url_path}{trailing_slash}$',
 			name='{basename}-{url_name}',
 			detail=False,
 			initkwargs={}

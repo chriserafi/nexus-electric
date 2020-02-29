@@ -1,8 +1,22 @@
 from django.db import models
-#from django.contrib.auth.models import User
+from django.contrib.auth.models import User
 
-# class NexusUser(User):
-#     Quotas = models.
+class NexusUser(models.Model):
+    user = models.OneToOneField(User, on_delete=models.DO_NOTHING)
+    quotas = models.IntegerField()
+
+class ActualvsForecast(models.Model):
+    AreaName = models.CharField(max_length=200, blank=True, null=True)
+    AreaTypeCodeId = models.ForeignKey('AreaTypeCode', models.DO_NOTHING, db_column='AreaTypeCodeId', blank=True, null=True)
+    MapCodeId = models.ForeignKey('MapCode', models.DO_NOTHING, db_column='MapCodeId', blank=True, null=True)
+    ResolutionCodeId = models.ForeignKey('ResolutionCode', models.DO_NOTHING, db_column='ResolutionCodeId', blank=True, null=True)
+    Year = models.IntegerField()
+    Month = models.IntegerField()
+    Day = models.IntegerField()
+    DateTime = models.DateTimeField()
+
+    class Meta:
+        managed = False
 
 
 class ActualTotalLoad(models.Model):

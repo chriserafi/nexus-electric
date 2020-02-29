@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'back_end.apps.BackEndConfig',
     'cli_client.apps.CliClientConfig',
     'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 MIDDLEWARE = [
@@ -146,5 +147,7 @@ REST_FRAMEWORK = {
 		'rest_framework.renderers.JSONRenderer',
 		'rest_framework_csv.renderers.CSVRenderer',
 	],
-    'DATETIME_FORMAT': '%Y-%m-%d %H:%M:%S.%f', 
 }
+
+# Substituting a custom User model
+#AUTH_USER_MODEL = 'back_end.NexusUser'
