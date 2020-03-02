@@ -1,23 +1,21 @@
 import time
 from django.core.cache import cache as default_cache
 
-class NexusUserThrottling():
+class NexusUserThrottle():
     cache = default_cache
     timer = time.time
     cache_format = 'throttle_user_%(ident)s'
 
-    def get_cache_key(self, request, view):
-        if request.user.is_authenticated:
-            return request.user.pk
-        else:
-            return None
-
     def allow_request(self, request, view):
-        self.key = self.get_cache_key(request, view)
-        if self.key is None:
+        if request.user.is_authenticated:
+            self.key = request.user.pk
+        else:
             return False
+        
+        if request.user.is_staff:
+            return True
 
-        num_requests = request.user.nexususer.quotas
+        num_requests = request.user.nexususer.quota
         self.duration = 86400
 
         self.history = self.cache.get(self.key, [])

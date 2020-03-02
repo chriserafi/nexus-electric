@@ -143,11 +143,11 @@ STATIC_URL = '/static/'
 # REST-FRAMEWORK
 REST_FRAMEWORK = {
 	'DEFAULT_RENDERER_CLASSES': [
-		'rest_framework.renderers.BrowsableAPIRenderer', #this has to be removed for final exams
+		#'rest_framework.renderers.BrowsableAPIRenderer', #this has to be removed for final exams
 		'rest_framework.renderers.JSONRenderer',
 		'rest_framework_csv.renderers.CSVRenderer',
 	],
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'back_end.authentication.NexusTokenAuthentication'
+    ],
 }
-
-# Substituting a custom User model
-#AUTH_USER_MODEL = 'back_end.NexusUser'

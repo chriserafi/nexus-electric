@@ -13,7 +13,7 @@ class BaseDatasetSerializer(serializers.ModelSerializer):
             self.fields.pop(field)
     
     Source = serializers.ReadOnlyField(default="entso-e")
-    Dataset = serializers.ReadOnlyField(default="Dataset")
+    #Dataset = serializers.ReadOnlyField(default="Dataset")
     DateTimeUTC = serializers.DateTimeField(read_only=True, source="DateTime", format="%Y-%m-%d %H:%M:%S.%f")
     UpdateTimeUTC = serializers.DateTimeField(read_only=True, source="UpdateTime", format="%Y-%m-%d %H:%M:%S.%f")
     #AreaTypeCode = serializers.SlugRelatedField(read_only=True, source="AreaTypeCodeId", slug_field="AreaTypeCodeText")
@@ -25,6 +25,7 @@ class BaseDatasetSerializer(serializers.ModelSerializer):
 
 # Actual Total Load
 class ActualTotalLoadSerializer(BaseDatasetSerializer):
+    Dataset = serializers.ReadOnlyField(default="ActualTotalLoad")
     ActualTotalLoadValue = serializers.FloatField(read_only=True,source="TotalLoadValue", required=False)
     ActualTotalLoadByDayValue = serializers.FloatField(read_only=True, required=False)
     ActualTotalLoadByMonthValue = serializers.FloatField(read_only=True, required=False)
@@ -62,6 +63,7 @@ class ActualTotalLoadSerializer(BaseDatasetSerializer):
 
 # Day Ahead Total Load Forecast
 class DayAheadTotalLoadForecastSerializer(BaseDatasetSerializer):
+    Dataset = serializers.ReadOnlyField(default="DayAheadTotalLoadForecast")
     DayAheadTotalLoadForecastValue = serializers.FloatField(read_only=True, source="TotalLoadValue", required=False)
     DayAheadTotalLoadForecastByDayValue = serializers.FloatField(read_only=True, required=False)
     DayAheadTotalLoadForecastByMonthValue = serializers.FloatField(read_only=True, required=False)
@@ -91,11 +93,12 @@ class DayAheadTotalLoadForecastSerializer(BaseDatasetSerializer):
 
 # Actual vs Forecast
 class ActualvsForecastSerializer(BaseDatasetSerializer):
+    Dataset = serializers.ReadOnlyField(default="ActualvsForecast")
     DayAheadTotalLoadForecastValue = serializers.FloatField(read_only=True, source="ForecastValue")
     ActualTotalLoadValue = serializers.FloatField(read_only=True, source="TotalLoadValue")
 
     class Meta:
-        model = ActualvsForecast
+        #model = ActualvsForecast
         # fields = ['Source', 'Dataset', 'AreaName', 'AreaTypeCode', 
         #         'MapCode', 'ResolutionCode', 'Year', 'Month', 'Day', 
         #         'DateTimeUTC', 'DayAheadTotalLoadForecastValue', 'ActualTotalLoadValue']
@@ -103,6 +106,7 @@ class ActualvsForecastSerializer(BaseDatasetSerializer):
 
 # Aggregated Generation Per Type
 class AggregatedGenerationPerTypeSerializer(BaseDatasetSerializer):
+    Dataset = serializers.ReadOnlyField(default="AggregatedGenerationPerType")
     ProductionType = serializers.CharField(read_only=True, source="ProductionTypeId__ProductionTypeText")
     ActualGenerationOutputValue = serializers.FloatField(read_only=True, source="ActualGenerationOutput", required=False)
     ActualGenerationOutputByDayValue = serializers.FloatField(read_only=True, required=False)
@@ -135,6 +139,49 @@ class AggregatedGenerationPerTypeSerializer(BaseDatasetSerializer):
                 'ProductionType', 'ActualGenerationOutputValue', 'ActualGenerationOutputByDayValue', 
                 'ActualGenerationOutputByMonthValue', 'UpdateTimeUTC']
 
+# # User Serializer
+# class UserSerializer(serializers.ModelSerializer):
+    
+#     # def to_representation(self, instance):
+#     #     return instance.username, instance.password
+#     #     # {
+#     #     #     'username' : instance.username
+#     #     # }
+    
+#     class Meta:
+#         model = User
+#         fields = ['username', 'password', 'email']
+
+# # Nexus User Serializer
+# class NexusUserSerializer(serializers.ModelSerializer):
+#     user = UserSerializer()
+
+#     class Meta:
+#         model = NexusUser
+#         fields = ['user', 'quota']
+class NexusUserSerializer(serializers.ModelSerializer):
+    quota = serializers.IntegerField(source="nexususer.quota")
+    API_key = serializers.CharField(source="auth_token.key",read_only=True)
+
+
+    class Meta:
+        model = User
+        fields = ['username', 'API_key', 'email', 'quota']
+    #TODO
+    def update(self, instance, validated_data):
+        nexususer_data = validated_data.pop('nexususer')
+
+        nexususer = instance.nexususer
+
+        instance.username = validated_data.get('username', instance.username)
+        instance.password = validated_data.get('password', instance.password)
+        instance.email = validated_data.get('email', instance.email)
+        instance.save()
+
+        nexususer.quota = nexususer_data.get('quota', nexususer.quota)
+        nexususer.save()
+
+        return instance
 
 class MapCodeSerializer(serializers.ModelSerializer):
     def to_internal_value(self, data):

@@ -79,7 +79,7 @@ class AdminRouter(SimpleRouter):
 		),
 		
 		DynamicRoute(
-			url=r'^{prefix}/{url_path}{trailing_slash}$',
+			url=r'^{prefix}/{url_path}{trailing_slash}?$',
 			name='{basename}-{url_name}',
 			detail=False,
 			initkwargs={}

@@ -1,22 +1,33 @@
+# Django
 from django.shortcuts import render
 from django.db.models import Sum
 from django.db import connection, transaction
 from django.conf import settings
 from django.db.utils import OperationalError
+from django.contrib.auth.models import User
+# Rest Framework
 from rest_framework import viewsets
-from back_end.models import *
-from back_end.serializers import *
 from rest_framework.response import Response
-from rest_framework.decorators import action, api_view
-from back_end.parsers import CSVParser
+from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.decorators import api_view
 from rest_framework.decorators import parser_classes
 from rest_framework.parsers import JSONParser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+# Back-End
+from back_end.models import *
+from back_end.serializers import *
+from back_end.parsers import CSVParser
 from back_end.inserters import importer
+from back_end.throttling import NexusUserThrottle
+#
+import json
+from collections import OrderedDict
 
 # Get-Only Template
 class GetOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
     http_method_names = ['get']
+    permission_classes = [IsAuthenticated]
+    throttle_classes = [NexusUserThrottle]
 
     def get_queryset(self, **kwargs):
         return self.queryset.objects.filter(**kwargs)
@@ -225,72 +236,37 @@ class DayAheadTotalLoadForecastViewSet(GetOnlyModelViewSet):
 
 # ActualvsForecastViewSet
 class ActualvsForecastViewSet(viewsets.ViewSet):
-
-    def join_dataset_results(self, area_name, resolution, date, exclude_forecast, actual_field):
-        queryset = ActualvsForecast.objects.raw(
-            """  
-                SELECT a.AreaName, a.AreaTypeCodeId, a.MapCodeId, a.ResolutionCodeId, a.Year, a.Month, a.Day, b.TotalLoadValue as ForecastValue, a.TotalLoadValue
-                FROM `back_end_actualtotalload` as a
-                INNER JOIN `back_end_dayaheadtotalloadforecast` as b
-                ON a.DateTime = b.DateTime AND a.ResolutionCodeId = b.ResolutionCodeId AND a.AreaCodeId = b.AreaCodeId AND a.AreaTypeCodeId = b.AreaTypeCodeId AND a.MapCodeId = b.MapCodeId 
-            """
-        ).filter(
-            AreaName=area_name,
-            ResolutionCodeId__ResolutionCodeText=resolution,
-            Year=year,
-            Month=month,
-            Day=day
-        )
-
-        serializer = ActualvsForecast(queryset, many=True)
-
-        return Response(serializer.data)
+    permission_classes = [IsAuthenticated]
+    throttling_classes = [NexusUserThrottle]
 
     def date(self, request, area_name, resolution, date):
+        try:
+            year, month, day = date.split('-')
 
-        # year, month, day = date.split('-')
-
-        # queryset_actual = ActualTotalLoad.objects.filter(
-        #     AreaName=area_name,
-        #     ResolutionCodeId__ResolutionCodeText=resolution,
-        #     Year=year,
-        #     Month=month,
-        #     Day=day
-        # )
-
-        # queryset_forecast = DayAheadTotalLoadForecast.objects.filter(
-        #     AreaName=area_name,
-        #     ResolutionCodeId__ResolutionCodeText=resolution,
-        #     Year=year,
-        #     Month=month,
-        #     Day=day
-        # )
-
-        # queryset = queryset_actual.union(queryset_forecast)
-
-        # #serializer = ActualvsForecastSerializer(queryset, many=True)
-
-        # return Response(queryset.values())
-        cursor = connection.cursor()
-        cursor.execute(
-            """  
-                SELECT a.AreaName, c.AreaTypeCodeText, d.MapCodeText, e.ResolutionCodeText, a.Year, a.Month, a.Day, b.TotalLoadValue as ForecastValue, a.TotalLoadValue
-                FROM `back_end_actualtotalload` as a
-                INNER JOIN `back_end_dayaheadtotalloadforecast` as b
-                ON a.DateTime = b.DateTime AND a.ResolutionCodeId = b.ResolutionCodeId AND a.AreaCodeId = b.AreaCodeId AND a.AreaTypeCodeId = b.AreaTypeCodeId AND a.MapCodeId = b.MapCodeId
-                INNER JOIN `back_end_areatypecode` as c
-                ON a.AreaTypeCodeId = c.Id
-                INNER JOIN `back_end_mapcode` as d
-                ON a.MapCodeId = d.Id
-                INNER JOIN `back_end_resolutioncode` as e
-                ON a.ResolutionCodeId = e.Id
-            """
-        )
-        columns = [col[0] for col in cursor.description]
-        res = [
-            dict(zip(columns, row))
-            for row in cursor.fetchall()
-        ]
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""  
+                    SELECT "entso-e" as Source, "ActualvsForecast" as Dataset, a.AreaName, c.AreaTypeCodeText as AreaTypeCode, d.MapCodeText as MapCode, e.ResolutionCodeText as ResolutionCode, a.Year, a.Month, a.Day, a.DateTime as DateTimeUTC, b.TotalLoadValue as DayAheadTotalLoadForecastValue, a.TotalLoadValue as ActualTotalLoadValue
+                    FROM `back_end_actualtotalload` as a
+                    INNER JOIN `back_end_dayaheadtotalloadforecast` as b
+                    ON a.DateTime = b.DateTime AND a.ResolutionCodeId = b.ResolutionCodeId AND a.AreaCodeId = b.AreaCodeId AND a.AreaTypeCodeId = b.AreaTypeCodeId AND a.MapCodeId = b.MapCodeId
+                    INNER JOIN `back_end_areatypecode` as c
+                    ON a.AreaTypeCodeId = c.Id
+                    INNER JOIN `back_end_mapcode` as d
+                    ON a.MapCodeId = d.Id
+                    INNER JOIN `back_end_resolutioncode` as e
+                    ON a.ResolutionCodeId = e.Id
+                    WHERE a.AreaName = '{area_name}' AND e.ResolutionCodeText = '{resolution}' AND a.Year = {int(year)} AND a.Month = {int(month)} AND a.Day = {(day)}
+                """
+            )
+            #columns = [col[0] for col in cursor.description]
+            columns = ['Source', 'Dataset', 'AreaName', 'AreaTypeCode', 'MapCode', 'ResolutionCode', 'Year', 'Month', 'Day', 'DateTimeUTC', 'DayAheadTotalLoadForecastValue', 'ActualTotalLoadValue']
+            res = [
+                OrderedDict(zip(columns, row))
+                for row in cursor.fetchall()
+            ]
+        except:
+            return Response(status=400)
 
         return Response(res)
 
@@ -340,16 +316,32 @@ class MapCodeViewSet(viewsets.ModelViewSet):
 
 # AdminViewSet
 class AdminViewSet(viewsets.ViewSet):
-    http_method_names = ['get', 'post']
+    http_method_names = ['get', 'post', 'put']
+    permission_classes = [IsAdminUser]
 
     def create(self, request):
-        return Response({"METHOD": "CREATE"})
+        username = request.data.get('username')
+        password = request.data.get('password')
+        email = request.data.get('email')
+        quota = request.data.get('quota', 0)
+        user = User.objects.create_user(username, email, password)
+        user.save()
+        nexususer = NexusUser(user=user, quota=quota)
+        nexususer.save()
+        return Response()
 
     def retrieve(self, request, username):
-        return Response({"METHOD": "RETRIEVE"})
+        the_user = User.objects.filter(username=username)
+        serializer = NexusUserSerializer(the_user, many=True)
+        return Response(serializer.data)
 
     def update(self, request, username):
-        return Response({"METHOD": "UPDATE"})
+        instance= User.objects.get(username=username)
+        d=request.data
+        serializer = NexusUserSerializer(instance,data=d)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
     @action(methods=['post'], detail=False)
     def ActualTotalLoad(self, request):
@@ -401,23 +393,28 @@ class AdminViewSet(viewsets.ViewSet):
         return Response(d)
 
 
-# DUMMY
-@api_view(http_method_names=['GET'])
-def sth(request):
+# Login
+@api_view(http_method_names=['POST'])
+def login(request):
     pass
 
+@api_view(http_method_names=['POST'])
+@permission_classes([IsAuthenticated])
+def logout(request):
+    request.user.auth_token.delete()
+    return Response(None)
 
 @api_view(http_method_names=['POST'])
 def reset_database(request):
-    return Response(None)
-    # try:
-    #     with transaction.atomic():
-    #         ActualTotalLoad.objects.all().delete()
-    #         AggregatedGenerationPerType.objects.all().delete()
-    #         DayAheadTotalLoadForecast.objects.all().delete()
-    #         return Response({"status" : "OK"})
-    # except:
-    #     return Response(None)
+    try:
+        with transaction.atomic():
+            ActualTotalLoad.objects.all().delete()
+            AggregatedGenerationPerType.objects.all().delete()
+            DayAheadTotalLoadForecast.objects.all().delete()
+            User.objects.filter(is_staff=0).delete()
+            return Response({"status" : "OK"})
+    except:
+        return Response(None)
 
 
 @api_view(http_method_names=['GET'])
@@ -427,4 +424,8 @@ def health_check(request):
     except OperationalError:
         return Response(None)
     else:
-        return Response({"status": "OK"})
+        return Response(
+            {
+            "status": "OK"
+            }
+        )
