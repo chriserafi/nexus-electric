@@ -16,18 +16,22 @@
     <script type="text/javascript" src="{% static 'js/bootstrap.bundle.min.js' %}"></script>
     {% block headextras %}{% endblock %}
 </head> 
-<body style="background-image: url('/static/images/original.png'); background-repeat: repeat;background-position: center top;">
+<body style="background-image: url('/static/images/media/background.jpg'); background-position: center top;  background-size: cover; padding-top: 60px;">
     <nav class="navbar navbar-expand-lg fixed-top navbar-dark bg-dark">
         <div class="container">
-            <a class="navbar-brand">Nexus Electric</a>
+            <a class="navbar-brand" href="#"><img src="/static/logo.png" style="border-radius:50%; border:3px solid black;" alt="Avatar" align="right" width="40" height="40"/></a>
+            {% if logged_in %}
+                <a class="navbar-brand" href="/energy/nexuselectric">Nexus Electric</a>
+            {% else %}
+                <a class="navbar-brand">Nexus Electric</a>
+            {% endif %}
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarContent">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link" href="/energy/about" target="nexuselectirc.about" onclick="check_window_status(this, event)"><span class="glyphicon glyphicon-tags"></span>&nbsp;About</a></li>
-                    {% if user.is_authenticated %}
-                        <li class="nav-item"><p>Welcome, {{ user.username }}</p></li>
+                    <li class="nav-item"><a class="nav-link" href="/energy/about"><span class="glyphicon glyphicon-tags"></span>&nbsp;About</a></li>
+                    {% if logged_in %}
                         <li class="nav-item"><a class="nav-link" href="/energy/logout"><span class="glyphicon glyphicon-log-out"></span>&nbsp;Log out</a></li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="/energy/login"><span class="glyphicon glyphicon-log-in"></span>&nbsp;Log in</a></li>
@@ -36,13 +40,13 @@
             </div>
         </div>
     </nav>
-    <form method="POST" onsubmit="return _submit_handler(event);" id="mainform">
+    <form method="POST" id="mainform" role="form">
         {% csrf_token %}
         <div class="container" style="padding-top:1.5em;">
             {% block maincontent %}{% endblock %}
             <hr />
             <footer>
-                <p>&copy; BringItOhm - Nexus Electric</p>
+                <p class="text-white">&copy; 2020 BringItOhm - Nexus Electric</p>
             </footer>
         </div>
 

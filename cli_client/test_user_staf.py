@@ -1,6 +1,7 @@
 import pytest
 from client import *
 import random
+import json
 
 import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -44,9 +45,15 @@ def test_get_actual_total_load(login_user):
 
 def test_get_aggregated_generation_type(login_user):
     assert login_user.status_code == 200
-    query = {'area':'Greece', 'date':'2020-01-01', 'timeres':'PT15M', 'prodtype':'a', 'format':'json', 'month': '', 'year': ''}
+    query = {'area':'Austria', 'date':'2018-01-06', 'timeres':'PT15M', 'prodtype':'Fossil Gas', 'format':'json', 'month': '', 'year': ''}
     responce = aggregated_generation_per_type(query)
     assert responce.status_code == 200
+    foo=json.loads(responce.text)
+    if len(foo) > 0:
+        k_foo=set(list(foo[0].keys()))
+        correct = set(['Source', 'Dataset', 'AreaName', 'Year', 'Month', 'Day', 'DateTimeUTC', 'ActualGenerationOutputValue', 'UpdateTimeUTC'])
+        assert k_foo == correct
+    pass
 
 def test_get_day_ahead_total_load_forcast(login_user):
     assert login_user.status_code == 200

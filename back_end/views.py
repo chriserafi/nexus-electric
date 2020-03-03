@@ -11,9 +11,9 @@ from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.decorators import api_view
 from rest_framework.decorators import parser_classes
-from rest_framework.exceptions import Throttled
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.exceptions import Throttled
 # Back-End
 from back_end.models import *
 from back_end.serializers import *
@@ -23,6 +23,11 @@ from back_end.throttling import NexusUserThrottle
 #
 import json
 from collections import OrderedDict
+
+
+class ThrottleCustom(Throttled):
+    status_code = 402
+    default_detail = 'Request was throttled. Try again later'
 
 # Get-Only Template
 class GetOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
@@ -34,8 +39,8 @@ class GetOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
         return self.queryset.objects.filter(**kwargs)
     
     def throttled(self, request, wait):
-        raise Throttled(detail="Request was throttled. Try again later", status_code=402)
-        return Response("Request was throttled. Try again later", status=402)
+        raise ThrottleCustom()
+        #return Response("Request was throttled. Try again later", status=402)
 
 # ActualTotalLoadViewSet
 class ActualTotalLoadViewSet(GetOnlyModelViewSet):

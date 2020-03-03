@@ -102,21 +102,34 @@ String.prototype.format = function() {
 
 BASE_URL = 'http://127.0.0.1:8888/energy/api/{0}?format=json';
 
-function get_access_token() {
-    xhttp = new XMLHttpRequest();
-    xhttp.open('POST', BASE_URL.format("Login"), true);
-    xhttp.setRequestHeader('Access-Control-Allow-Origin', 'http://127.0.0.1:8888/energy/api')
-    xhttp.send({
-        'username' : $('#username').val(),
-        'password' : $('#password').val()
-    })
+// function get_access_token() {
+//     xhttp = new XMLHttpRequest();
+//     xhttp.open('POST', BASE_URL.format("Login"), true);
+//     xhttp.send({
+//         'username' : $('#username').val(),
+//         'password' : $('#password').val()
+//     })
 
-    promise = new Promise((resolve, reject) => {
-        xhttp.onreadystatechange = function() {
-            if (this.readyState == 4) {
-                alert(this.response)
-                resolve()
-            }
+//     promise = new Promise((resolve, reject) => {
+//         xhttp.onreadystatechange = function() {
+//             if (this.readyState == 4) {
+//                 alert(this.response)
+//                 resolve()
+//             }
+//         }
+//     })
+// }
+
+function get_access_token() {
+    $.ajax({
+        url: BASE_URL.format("Login"),
+        method: 'POST',
+        data: {
+            'username' : $('#username').val(),
+            'password' : $('#password').val()
         }
+    }).done(function(data) {
+        alert(data)
+        alert(JSON.parse(data))
     })
 }
