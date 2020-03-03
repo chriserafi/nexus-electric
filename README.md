@@ -1,12 +1,14 @@
 # Software Engineering 2019- NTUA
-
-![PyPI - Django Version](https://img.shields.io/pypi/djversions/djangorestframework.svg) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Django.svg) ![APMLicense](https://img.shields.io/badge/license-MIT-green.svg)
-
-  
+![PyPI - Django Version](https://img.shields.io/pypi/djversions/djangorestframework.svg)  ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Django.svg) ![APMLicense](https://img.shields.io/badge/license-MIT-green.svg)
 
 ## :question: Project Description
 
-  
+This project aims to provide a web-based elecricity market data management platform, which will 
+allow users to download, analyze and visualize open datasets from the [ENTSO-E Transparency Platform](https://transparency.entsoe.eu) via RESTful Web APIs.
+
+## :question: Project Description
+
+
 
 This project aims to provide a web-based elecricity market data management platform, which will
 
@@ -110,4 +112,5 @@ Examples:
 `./energy_group11 -h`
 `./energy_group11 Login --username admin --passw 321nimda`
 `./energy_group11 ActualTotalLoad --area Austria --timeres PT15M --year 2018`
+
 
