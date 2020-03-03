@@ -30,7 +30,7 @@ class TestSuppEndpoints(APITestCase):
                                                                        UpdateTime=timestamp, ActualGenerationOutput=40.00, ActualConsuption=32.00)
 
         self.user = User.objects.create_superuser(
-            username='admin', password='321nimda', is_staff=True)
+            username='admin', password='321nimda', email='admin@gmail.com', is_staff=True)
         self.user.save()
         self.user = User.objects.create_user(
             username='tester', password='code')
