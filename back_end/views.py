@@ -11,13 +11,14 @@ from rest_framework.response import Response
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.decorators import api_view
 from rest_framework.decorators import parser_classes
+from rest_framework.exceptions import Throttled
 from rest_framework.parsers import JSONParser
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 # Back-End
 from back_end.models import *
 from back_end.serializers import *
-from back_end.parsers import CSVParser
-from back_end.inserters import importer
+#from back_end.parsers import CSVParser
+from back_end.inserters import batch_import #importer
 from back_end.throttling import NexusUserThrottle
 #
 import json
@@ -31,6 +32,10 @@ class GetOnlyModelViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self, **kwargs):
         return self.queryset.objects.filter(**kwargs)
+    
+    def throttled(self, request, wait):
+        raise Throttled(detail="Request was throttled. Try again later", status_code=402)
+        return Response("Request was throttled. Try again later", status=402)
 
 # ActualTotalLoadViewSet
 class ActualTotalLoadViewSet(GetOnlyModelViewSet):
@@ -47,7 +52,7 @@ class ActualTotalLoadViewSet(GetOnlyModelViewSet):
                 'DateTime'
             )
         except:
-            return Response(None, status=400)
+            return Response({}, status=400)
 
         serializer = self.get_serializer(queryset, many=True, exclude={
                                          'ActualTotalLoadByDayValue', 'ActualTotalLoadByMonthValue'})
@@ -67,7 +72,7 @@ class ActualTotalLoadViewSet(GetOnlyModelViewSet):
                 'Year', 'Month', 'Day'
             )
         except:
-            return Response(None, status=400)
+            return Response({}, status=400)
 
         serializer = self.get_serializer(queryset, many=True, exclude={
                                          'ActualTotalLoadValue', 'ActualTotalLoadByMonthValue', 'DateTimeUTC', 'UpdateTimeUTC'})
@@ -83,7 +88,7 @@ class ActualTotalLoadViewSet(GetOnlyModelViewSet):
                 ActualTotalLoadByMonthValue=Sum('TotalLoadValue')
             )
         except:
-            return Response(None, status=400)
+            return Response({}, status=400)
 
         serializer = self.get_serializer(queryset, many=True, exclude={
                                          'ActualTotalLoadValue', 'ActualTotalLoadByDayValue', 'Day', 'DateTimeUTC', 'UpdateTimeUTC'})
@@ -106,12 +111,12 @@ class AggregatedGenerationPerTypeViewSet(GetOnlyModelViewSet):
                 )
             else:
                 queryset = self.get_queryset(
-                    AreaName=area_name, ProductionId__ProductionTypeText=production_type, ResolutionCodeId__ResolutionCodeText=resolution, Year=year, Month=month, Day=day
+                    AreaName=area_name, ProductionTypeId__ProductionTypeText=production_type, ResolutionCodeId__ResolutionCodeText=resolution, Year=year, Month=month, Day=day
                 ).order_by(
                     'DateTime'
                 )
         except:
-            return Response(None, status=400)
+            return Response({}, status=400)
 
         serializer = self.get_serializer(queryset, many=True, exclude={
                                          'ActualGenerationOutputByDayValue', 'ActualGenerationOutputByMonthValue'})
@@ -134,7 +139,7 @@ class AggregatedGenerationPerTypeViewSet(GetOnlyModelViewSet):
                 )
             else:
                 queryset = self.get_queryset(
-                    AreaName=area_name, ProductionId__ProductionTypeText=production_type, ResolutionCodeId__ResolutionCodeText=resolution, Year=year, Month=month
+                    AreaName=area_name, ProductionTypeId__ProductionTypeText=production_type, ResolutionCodeId__ResolutionCodeText=resolution, Year=year, Month=month
                 ).values(
                     'AreaName', 'AreaTypeCodeId__AreaTypeCodeText', 'MapCodeId__MapCodeText', 'ResolutionCodeId__ResolutionCodeText', 'ProductionTypeId__ProductionCodeText', 'Year', 'Month', 'Day'
                 ).annotate(
@@ -144,7 +149,7 @@ class AggregatedGenerationPerTypeViewSet(GetOnlyModelViewSet):
                     'Year', 'Month', 'Day'
                 )
         except:
-            return Response(None, status=400)
+            return Response({}, status=400)
 
         serializer = self.get_serializer(queryset, many=True, exclude={
                                          'ActualGenerationOutputValue', 'ActualGenerationOutputByMonthValue', 'DateTimeUTC', 'UpdateTimeUTC'})
@@ -163,7 +168,7 @@ class AggregatedGenerationPerTypeViewSet(GetOnlyModelViewSet):
                 )
             else:
                 queryset = self.get_queryset(
-                    AreaName=area_name, ProductionId__ProductionTypeText=production_type, ResolutionCodeId__ResolutionCodeText=resolution, Year=date
+                    AreaName=area_name, ProductionTypeId__ProductionTypeText=production_type, ResolutionCodeId__ResolutionCodeText=resolution, Year=date
                 ).values(
                     'AreaName', 'AreaTypeCodeId__AreaTypeCodeText', 'MapCodeId__MapCodeText', 'ResolutionCodeId__ResolutionCodeText', 'ProductionTypeId__ProductionCodeText', 'Year', 'Month'
                 ).annotate(
@@ -171,7 +176,7 @@ class AggregatedGenerationPerTypeViewSet(GetOnlyModelViewSet):
                         'ActualGenerationOutput')
                 )
         except:
-            return Response(None, status=400)
+            return Response({}, status=400)
 
         serializer = self.get_serializer(queryset, many=True, exclude={
                                          'ActualGenerationOutputValue', 'ActualGenerationOutputByDayValue', 'Day', 'DateTimeUTC', 'UpdateTimeUTC'})
@@ -192,7 +197,7 @@ class DayAheadTotalLoadForecastViewSet(GetOnlyModelViewSet):
                 'DateTime'
             )
         except:
-            return Response(None, status=400)
+            return Response({}, status=400)
 
         serializer = self.get_serializer(queryset, many=True, exclude={
                                          'DayAheadTotalLoadForecastByDayValue', 'DayAheadTotalLoadForecastByMonthValue'})
@@ -212,7 +217,7 @@ class DayAheadTotalLoadForecastViewSet(GetOnlyModelViewSet):
                 'Year', 'Month', 'Day'
             )
         except:
-            return Response(None, status=400)
+            return Response([], status=400)
 
         serializer = self.get_serializer(queryset, many=True, exclude={
                                          'DayAheadTotalLoadForecastValue', 'DayAheadTotalLoadForecastByMonthValue', 'DateTimeUTC', 'UpdateTimeUTC'})
@@ -228,7 +233,7 @@ class DayAheadTotalLoadForecastViewSet(GetOnlyModelViewSet):
                 DayAheadTotalLoadForecastByMonthValue=Sum('TotalLoadValue')
             )
         except:
-            return Response(None, status=400)
+            return Response({}, status=400)
 
         serializer = self.get_serializer(queryset, many=True, exclude={
                                          'DayAheadTotalLoadForecastValue', 'DayAheadTotalLoadForecastByDayValue', 'Day', 'DateTimeUTC', 'UpdateTimeUTC'})
@@ -246,7 +251,7 @@ class ActualvsForecastViewSet(viewsets.ViewSet):
             cursor = connection.cursor()
             cursor.execute(
                 f"""  
-                    SELECT "entso-e" as Source, "ActualvsForecast" as Dataset, a.AreaName, c.AreaTypeCodeText as AreaTypeCode, d.MapCodeText as MapCode, e.ResolutionCodeText as ResolutionCode, a.Year, a.Month, a.Day, a.DateTime as DateTimeUTC, b.TotalLoadValue as DayAheadTotalLoadForecastValue, a.TotalLoadValue as ActualTotalLoadValue
+                    SELECT "entso-e" as Source, "ActualvsForecast" as Dataset, a.AreaName, c.AreaTypeCodeText as AreaTypeCode, d.MapCodeText as MapCode, e.ResolutionCodeText as ResolutionCode, a.Year, a.Month, a.Day, DATE_FORMAT(a.DateTime, '%Y-%m-%d %H:%i:%S.%f') as DateTimeUTC, b.TotalLoadValue as DayAheadTotalLoadForecastValue, a.TotalLoadValue as ActualTotalLoadValue
                     FROM `back_end_actualtotalload` as a
                     INNER JOIN `back_end_dayaheadtotalloadforecast` as b
                     ON a.DateTime = b.DateTime AND a.ResolutionCodeId = b.ResolutionCodeId AND a.AreaCodeId = b.AreaCodeId AND a.AreaTypeCodeId = b.AreaTypeCodeId AND a.MapCodeId = b.MapCodeId
@@ -256,7 +261,8 @@ class ActualvsForecastViewSet(viewsets.ViewSet):
                     ON a.MapCodeId = d.Id
                     INNER JOIN `back_end_resolutioncode` as e
                     ON a.ResolutionCodeId = e.Id
-                    WHERE a.AreaName = '{area_name}' AND e.ResolutionCodeText = '{resolution}' AND a.Year = {int(year)} AND a.Month = {int(month)} AND a.Day = {(day)}
+                    WHERE a.AreaName = '{area_name}' AND e.ResolutionCodeText = '{resolution}' AND a.Year = {int(year)} AND a.Month = {int(month)} AND a.Day = {int(day)}
+                    ORDER BY a.DateTime ASC
                 """
             )
             #columns = [col[0] for col in cursor.description]
@@ -266,53 +272,72 @@ class ActualvsForecastViewSet(viewsets.ViewSet):
                 for row in cursor.fetchall()
             ]
         except:
-            return Response(status=400)
+            return Response({}, status=400)
 
         return Response(res)
 
     def month(self, request, area_name, resolution, date):
-        return self.join_dataset_results(area_name, resolution, date, {'DayAheadTotalLoadForecastValue', 'DayAheadTotalLoadForecastByMonthValue', 'UpdateTimeUTC'}, 'ActualTotalLoadByDayValue')
+        try:
+            year, month = date.split('-')
+
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""  
+                    SELECT "entso-e" as Source, "ActualvsForecast" as Dataset, a.AreaName, c.AreaTypeCodeText as AreaTypeCode, d.MapCodeText as MapCode, e.ResolutionCodeText as ResolutionCode, a.Year, a.Month, a.Day, SUM(b.TotalLoadValue) as DayAheadTotalLoadForecastByDayValue, SUM(a.TotalLoadValue) as ActualTotalLoadByDayValue
+                    FROM `back_end_actualtotalload` as a
+                    INNER JOIN `back_end_dayaheadtotalloadforecast` as b
+                    ON a.DateTime = b.DateTime AND a.ResolutionCodeId = b.ResolutionCodeId AND a.AreaCodeId = b.AreaCodeId AND a.AreaTypeCodeId = b.AreaTypeCodeId AND a.MapCodeId = b.MapCodeId
+                    INNER JOIN `back_end_areatypecode` as c
+                    ON a.AreaTypeCodeId = c.Id
+                    INNER JOIN `back_end_mapcode` as d
+                    ON a.MapCodeId = d.Id
+                    INNER JOIN `back_end_resolutioncode` as e
+                    ON a.ResolutionCodeId = e.Id
+                    WHERE a.AreaName = '{area_name}' AND e.ResolutionCodeText = '{resolution}' AND a.Year = {int(year)} AND a.Month = {int(month)}
+                    GROUP BY a.Day
+                    ORDER BY a.Day ASC
+                """
+            )
+            columns = [col[0] for col in cursor.description]
+            #columns = ['Source', 'Dataset', 'AreaName', 'AreaTypeCode', 'MapCode', 'ResolutionCode', 'Year', 'Month', 'Day', 'DateTimeUTC', 'DayAheadTotalLoadForecastValue', 'ActualTotalLoadValue']
+            res = [
+                OrderedDict(zip(columns, row))
+                for row in cursor.fetchall()
+            ]
+        except:
+            return Response({}, status=400)
+
+        return Response(res)
 
     def year(self, request, area_name, resolution, date):
-        return self.join_dataset_results(area_name, resolution, date, {'DayAheadTotalLoadForecastValue', 'DayAheadTotalLoadForecastByDayValue', 'UpdateTimeUTC'}, 'ActualTotalLoadByMonthValue')
+        try:
+            cursor = connection.cursor()
+            cursor.execute(
+                f"""  
+                    SELECT "entso-e" as Source, "ActualvsForecast" as Dataset, a.AreaName, c.AreaTypeCodeText as AreaTypeCode, d.MapCodeText as MapCode, e.ResolutionCodeText as ResolutionCode, a.Year, a.Month, SUM(b.TotalLoadValue) as DayAheadTotalLoadForecastByMonthValue, SUM(a.TotalLoadValue) as ActualTotalLoadByMonthValue
+                    FROM `back_end_actualtotalload` as a
+                    INNER JOIN `back_end_dayaheadtotalloadforecast` as b
+                    ON a.DateTime = b.DateTime AND a.ResolutionCodeId = b.ResolutionCodeId AND a.AreaCodeId = b.AreaCodeId AND a.AreaTypeCodeId = b.AreaTypeCodeId AND a.MapCodeId = b.MapCodeId
+                    INNER JOIN `back_end_areatypecode` as c
+                    ON a.AreaTypeCodeId = c.Id
+                    INNER JOIN `back_end_mapcode` as d
+                    ON a.MapCodeId = d.Id
+                    INNER JOIN `back_end_resolutioncode` as e
+                    ON a.ResolutionCodeId = e.Id
+                    WHERE a.AreaName = '{area_name}' AND e.ResolutionCodeText = '{resolution}' AND a.Year = {int(date)}
+                    GROUP BY a.Month
+                """
+            )
+            columns = [col[0] for col in cursor.description]
+            #columns = ['Source', 'Dataset', 'AreaName', 'AreaTypeCode', 'MapCode', 'ResolutionCode', 'Year', 'Month', 'Day', 'DateTimeUTC', 'DayAheadTotalLoadForecastValue', 'ActualTotalLoadValue']
+            res = [
+                OrderedDict(zip(columns, row))
+                for row in cursor.fetchall()
+            ]
+        except:
+            return Response({}, status=400)
 
-# MapCodeViewSet
-class MapCodeViewSet(viewsets.ModelViewSet):
-    queryset = MapCode.objects.all()
-    serializer_class = MapCodeSerializer
-    @parser_classes([JSONParser])
-    def create(self, request, format=None):
-        file_obj = request.data['file']
-        #ftype = request.data['ftype']
-        #caption = request.data['caption']
-        #f = open(file_obj.file, "r")
-
-        #f = open(file_obj, "r")
-        #line = file_obj.file.read().decode("utf-8")
-        #line = line.replace('\0','')
-        #f = open("temp.csv", 'r+')
-        # f.write(line)
-        # file_obj.file.write(line)
-        barser = CSVParser()
-        datata = barser.parse(file_obj.file)
-        rec_in_file = barser.total_records_in_file
-
-        serializer = self.get_serializer(data=datata, many=True)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        totalRecords = MapCode.objects.all().count()
-        rec_imported = rec_in_file
-        d = {'totalRecordsInFile': rec_in_file, 'totalRecordsImported': rec_imported,
-             'totalRecordsInDatabase': totalRecords}
-        return Response(d)
-
-    # def post(self, request, *args, **kwargs):
-    #	if request.DATA['batch']:
-    #		json = request.DATA['batchData']
-    #		stream = StringIO(json)
-    #		data = JSONParser().parse(stream)
-    #		request._data = data
-    #	return super(CharacterDatumList, self).post(request, *args, **kwargs)
+        return Response(res)
 
 # AdminViewSet
 class AdminViewSet(viewsets.ViewSet):
@@ -324,11 +349,14 @@ class AdminViewSet(viewsets.ViewSet):
         password = request.data.get('password')
         email = request.data.get('email')
         quota = request.data.get('quota', 0)
-        user = User.objects.create_user(username, email, password)
-        user.save()
-        nexususer = NexusUser(user=user, quota=quota)
-        nexususer.save()
-        return Response()
+        if User.objects.filter(username=username).exists():
+            return Response("User Exists")
+        else:
+            user = User.objects.create_user(username, email, password)
+            user.save()
+            nexususer = NexusUser(user=user, quota=quota)
+            nexususer.save()
+            return Response({"status" : "OK"})
 
     def retrieve(self, request, username):
         the_user = User.objects.filter(username=username)
@@ -337,73 +365,35 @@ class AdminViewSet(viewsets.ViewSet):
 
     def update(self, request, username):
         instance= User.objects.get(username=username)
-        d=request.data
-        serializer = NexusUserSerializer(instance,data=d)
+        serializer = NexusUserSerializer(instance, data=request.data)
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
 
     @action(methods=['post'], detail=False)
     def ActualTotalLoad(self, request):
-        file_obj = request.data['file']
-        barser = CSVParser()
-        datata = barser.parse(file_obj.file)
-        rec_in_file = barser.total_records_in_file
-        rec_imported = importer(datata, 'back_end_actualtotalload')
-
-        #serializer = ActualTotalLoadSerializer(data=datata, many=True)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save()
-        totalRecords = ActualTotalLoad.objects.all().count()
-        #rec_imported = rec_in_file
-        d = {'totalRecordsInFile': rec_in_file, 'totalRecordsImported': rec_imported,
-             'totalRecordsInDatabase': totalRecords}
-        return Response(d)
+        response = batch_import(request.data['file'], ActualTotalLoad, 'back_end_actualtotalload')
+        return Response(response)
+        
 
     @action(methods=['post'], detail=False)
     def AggregatedGenerationPerType(self, request):
-        file_obj = request.data['file']
-        barser = CSVParser()
-        datata = barser.parse(file_obj.file)
-        rec_in_file = barser.total_records_in_file
-        rec_imported = importer(datata, 'back_end_aggregatedgenerationpertype')
-        #serializer = AggregatedGenerationPerTypeSerializer(data=datata, many=True)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save()
-        totalRecords = AggregatedGenerationPerType.objects.all().count()
-        #rec_imported = rec_in_file
-        d = {'totalRecordsInFile': rec_in_file, 'totalRecordsImported': rec_imported,
-             'totalRecordsInDatabase': totalRecords}
-        return Response(d)
+        response = batch_import(request.data['file'], AggregatedGenerationPerType, 'back_end_aggregatedgenerationpertype')
+        return Response(response)
 
     @action(methods=['post'], detail=False)
     def DayAheadTotalLoadForecast(self, request):
-        file_obj = request.data['file']
-        barser = CSVParser()
-        datata = barser.parse(file_obj.file)
-        rec_in_file = barser.total_records_in_file
-        rec_imported = importer(datata, 'back_end_dayaheadtotalloadforecast')
-        #serializer = DayAheadTotalLoadForecastSerializer(data=datata, many=True)
-        # serializer.is_valid(raise_exception=True)
-        # serializer.save()
-        totalRecords = DayAheadTotalLoadForecast.objects.all().count()
-        #rec_imported = rec_in_file
-        d = {'totalRecordsInFile': rec_in_file, 'totalRecordsImported': rec_imported,
-             'totalRecordsInDatabase': totalRecords}
-        return Response(d)
+        response = batch_import(request.data['file'], DayAheadTotalLoadForecast, 'back_end_dayaheadtotalloadforecast')
+        return Response(response)
 
-
-# Login
-@api_view(http_method_names=['POST'])
-def login(request):
-    pass
-
+# Logout
 @api_view(http_method_names=['POST'])
 @permission_classes([IsAuthenticated])
 def logout(request):
     request.user.auth_token.delete()
-    return Response(None)
+    return Response({})
 
+# Reset
 @api_view(http_method_names=['POST'])
 def reset_database(request):
     try:
@@ -414,15 +404,15 @@ def reset_database(request):
             User.objects.filter(is_staff=0).delete()
             return Response({"status" : "OK"})
     except:
-        return Response(None)
+        return Response({})
 
-
+# Health Check
 @api_view(http_method_names=['GET'])
 def health_check(request):
     try:
         connection.cursor()
     except OperationalError:
-        return Response(None)
+        return Response({})
     else:
         return Response(
             {

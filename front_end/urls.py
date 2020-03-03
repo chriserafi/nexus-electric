@@ -1,13 +1,9 @@
 from django.urls import path
-from django.views.generic import TemplateView
+from front_end import views
 
 urlpatterns = [
-    path(
-        "about-us/",
-        TemplateView.as_view(template_name="about_us.html")
-    ),
-    path(
-        "",
-        TemplateView.as_view(template_name="home.html")
-    )
+    path('about/', views.about),
+    path('login/', views.login),
+    path('logout/', views.logout),
+    path('nexuselectric/', views.NexusElectricView.as_view())
 ]

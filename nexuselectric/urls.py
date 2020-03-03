@@ -20,5 +20,4 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('energy/api/', include('back_end.urls')),
     path('energy/', include('front_end.urls')),
-
 ]

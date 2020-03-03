@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}About{% endblock %}
+{% block maincontent %}
+<h2>About</h2>
+<hr />
+<div class="form-horizontal">
+	<label style="font-size: large">For development we used / referenced to:</label>
+	<div class="list-group" style="max-width: 280px">
+		<button class="list-group-item" type="button" style="width: 100%; text-align: left" onclick="window.open('http://www.fsu.gr')">Forecasting And Strategy Unit - FSU</button>
+		<button class="list-group-item" type="button" style="width: 100%; text-align: left" onclick="window.open('https://www.highcharts.com')">Highcharts</button>
+		<button class="list-group-item" type="button" style="width: 100%; text-align: left" onclick="window.open('https://creativecommons.org/licenses/by-nc/3.0/')">CC for Highcharts</button>
+		<button class="list-group-item" type="button" style="width: 100%; text-align: left" onclick="window.open('https://getbootstrap.com')">Bootstrap</button>
+		<button class="list-group-item" type="button" style="width: 100%; text-align: left" onclick="window.open('http://glyphicons.com')">Glyphicons Official</button>
+	</div>
+	<div class="form-group" style="margin:0 0 0 0">
+		<p style="font-size: large"><strong>Developed By:</strong>&nbsp;Christos Serafeidis&nbsp;(contact at: <a href="mailto:christos@fsu.gr">christos@fsu.gr</a>)</p>
+		<label style="font-size: large">Version: 5.0.1</label>
+	</div>
+</div>
+{% endblock %}

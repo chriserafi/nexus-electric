@@ -24,7 +24,6 @@ class ActualTotalLoad(models.Model):
     ResolutionCodeId = models.ForeignKey('ResolutionCode', models.DO_NOTHING, db_column='ResolutionCodeId', blank=True, null=True)
     RowHash = models.CharField(max_length=255, blank=True, null=True)
 
-
 class AggregatedGenerationPerType(models.Model):
     Id = models.AutoField(primary_key=True)
     EntityCreatedAt = models.DateTimeField()
@@ -46,7 +45,6 @@ class AggregatedGenerationPerType(models.Model):
     AreaCodeId = models.ForeignKey('AllocatedEICDetail', models.DO_NOTHING, db_column='AreaCodeId')
     RowHash = models.CharField(max_length=255, blank=True, null=True)
 
-
 class AllocatedEICDetail(models.Model):
     Id = models.AutoField(primary_key=True)
     EntityCreatedAt = models.DateTimeField()
@@ -67,14 +65,12 @@ class AllocatedEICDetail(models.Model):
     IsDeleted = models.BooleanField()
     AllocatedEICID = models.IntegerField()
 
-
 class AreaTypeCode(models.Model):
     Id = models.AutoField(primary_key=True)
     EntityCreatedAt = models.DateTimeField()
     EntityModifiedAt = models.DateTimeField()
     AreaTypeCodeText = models.CharField(unique=True, max_length=255, blank=True, null=True)
     AreaTypeCodeNote = models.CharField(max_length=255, blank=True, null=True)
-
 
 class DayAheadTotalLoadForecast(models.Model):
     Id = models.AutoField(primary_key=True)
@@ -95,7 +91,6 @@ class DayAheadTotalLoadForecast(models.Model):
     ResolutionCodeId = models.ForeignKey('ResolutionCode', models.DO_NOTHING, db_column='ResolutionCodeId', blank=True, null=True)
     RowHash = models.CharField(max_length=255, blank=True, null=True)
 
-
 class MapCode(models.Model):
     Id = models.AutoField(primary_key=True)
     EntityCreatedAt = models.DateTimeField()
@@ -103,14 +98,12 @@ class MapCode(models.Model):
     MapCodeText = models.CharField(unique=True, max_length=255, blank=True, null=True)
     MapCodeNote = models.CharField(max_length=255, blank=True, null=True)
 
-
 class ProductionType(models.Model):
     Id = models.AutoField(primary_key=True)
     EntityCreatedAt = models.DateTimeField()
     EntityModifiedAt = models.DateTimeField()
     ProductionTypeText = models.CharField(unique=True, max_length=255, blank=True, null=True)
     ProductionTypeNote = models.CharField(max_length=255, blank=True, null=True)
-
 
 class ResolutionCode(models.Model):
     Id = models.AutoField(primary_key=True)

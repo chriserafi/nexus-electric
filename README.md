@@ -1,160 +1,113 @@
 # Software Engineering 2019- NTUA
-![PyPI - Django Version](https://img.shields.io/pypi/djversions/djangorestframework.svg)  ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Django.svg) ![APMLicense](https://img.shields.io/badge/license-MIT-green.svg)
+
+![PyPI - Django Version](https://img.shields.io/pypi/djversions/djangorestframework.svg) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/Django.svg) ![APMLicense](https://img.shields.io/badge/license-MIT-green.svg)
+
+  
 
 ## :question: Project Description
 
-This project aims to provide a web-based elecricity market data management platform, which will 
+  
+
+This project aims to provide a web-based elecricity market data management platform, which will
+
 allow users to download, analyze and visualize open datasets from the [ENTSO-E Transparency Platform](https://transparency.entsoe.eu) via RESTful Web APIs.
 
+  
+  
 
 _This repository hosts the [Software Engineering](https://courses.softlab.ntua.gr/softeng/2019b/) assignment for NTUA Course "Software Engineering" (Fall 2019)._
 
+  
+
 :snake: The application is developed using the Django Web Framework in Python 3.7.
 
-
+  
+  
+  
 
 ## :mens: Team
 
+  
+
 This project was curated by "**BringItOhm**" team comprising of (in alphabetical order):
- * [Barmperis Alexandros](https://github.com/ABar1) (el15003@central.ntua.gr)
- * [Ntonas Andreas](https://github.com/Andreas-Ntonas) (el15624@central.ntua.gr)
- * [Panagiotaras Ilias](https://github.com/iliaspan) (el15746@central.ntua.gr)
- * [Serafeidis Christos](https://github.com/chris-sera) (el15053@central.ntua.gr)
+
+* [Barmperis Alexandros](https://github.com/ABar1) (el15003@central.ntua.gr)
+
+* [Ntonas Andreas](https://github.com/ntonasa) (el15624@central.ntua.gr)
+
+* [Panagiotaras Ilias](https://github.com/iliaspan) (el15746@central.ntua.gr)
+
+* [Serafeidis Christos](https://github.com/chris-sera) (el15053@central.ntua.gr)
+
+  
+  
+
+## Projects Features
+
+  
+
+This project features a wide variety of advanced tools in order to satisfy the needs of users with different requirements and expectations. In order to fulfill these demands the projects features:
+
+  
+
+- **Documentation** that analyses thoroughly the `Stakeholder Requirements Specifications` and `System Requirements Specifications` using extensive UML diagrams of various types.
+
+  
+
+- **`RESTful API`** that complies with OpenAPI3. This is the backbone of the project aiming to provide all the tools neccesseary for other applications aiming to take advantage of the data.
+
+  
+
+- **`Command Line Interface`** which utilizes the tools provided by the `RESTful API` aiming to provide an easier way to interact with the various tools of the application.
+
+  
+
+- **`Web Application`** which aims to offer a meaningful way to represent the data especially for the non experienced user.
 
 
-# TL19-template
+## Project Technologies
+### Core Elements:
+- [Python 3](https://www.python.org/)
+- [Django](https://www.djangoproject.com/)
+- [Django REST API](https://www.django-rest-framework.org/)
 
-Template repository, used for NTUA/ECE Software Engineering, 2019-2020
+### Aditional tools used in Development:
+- [daphne](https://github.com/django/daphne)
+- [Visual Studio Live Share](https://github.com/vsls-contrib)
+- [pytest](https://github.com/pytest-dev/pytest/)
+- [MariaDB](https://mariadb.org/)
 
-Το αρχείο αυτό περιέχει οδηγίες για το στήσιμο του git repository που θα
-χρησιμοποιήσετε.  Στο τέλος, θα το αντικαταστήσετε με το `README.md` που
-θα περιγράφει το δικό σας project.
+## Install Instructions
 
-
-## Στήσιμο του repository
-
-Αν σας αρκεί να ξεκινήσετε με αυτό το (κενό) template repository και να
-προσθέσετε εκεί ό,τι γράψετε, τότε είστε ευτυχισμένοι και έτοιμοι:
-
-```
-git clone git@github.com:ntua/TL19-nn
-```
-
-όπου φυσικά θα αντικαταστήσετε το `nn` με τον αριθμό της ομάδας σας.
-
-Αν είχατε ήδη αρχίσει να δουλεύετε σε κάποιο δικό σας git repository,
-τότε έχετε τις εξής **εναλλακτικές** επιλογές.
-
-> Οι δύο τελευταίες είναι κάπως επικίνδυνες --- διαβάστε πρώτα πώς δουλεύει
-> το `git` πριν τις εφαρμόσετε και βεβαιωθείτε ότι καταλαβαίνετε ακριβώς
-> τι κάνουν οι εντολές που εκτελείτε.
-> Θεωρήστε ότι σας προειδοποιήσαμε και, disclaimer, δεν κάνουμε git support!
-> Αν χαλάσετε το repository σας, λυπούμαστε πολύ αλλά είναι δικό σας πρόβλημα...
-
-1.  Να αντιγράψετε τα αρχεία από το δικό σας repository στο παρόν,
-    να τα κάνετε `git add`, `git commit` και `git push`.  Αυτή είναι
-    η απλούστερη λύση, αλλά έχει το μειονέκτημα ότι **θα χάσετε το
-    commit history** από το δικό σας repository.
-
-2.  Να μεταφέρετε το δικό σας repository **σβήνοντας** τα περιεχόμενα
-    του παρόντος.  Ξεκινώντας από ένα **clean** working directory του
-    δικού σας υπάρχοντος repository:
-
-    ```
-    git remote add official git@github.com:ntua/TL19-nn.git
-    git push -f official master
-    ```
-
-    Αν έχετε και άλλα branches, π.χ. κάποιο που λέγεται `other-branch`,
-    μπορείτε να τα κάνετε `git push` και εκείνα.
-
-    ```
-    git push official other-branch
-    ```
-
-    Στη συνέχεια, μπορείτε να κάνετε ένα φρέσκο `git clone` και να δουλεύετε
-    στο παρόν repos.
-
-3.  Να μεταφέρετε το history από το δικό σας repository **προσθέτοντας**
-    στο παρόν.  Ξεκινώντας από ένα **clean** working directory του δικού
-    σας υπάρχοντος repository:
-
-    ```
-    git remote add official git@github.com:ntua/TL19-nn.git
-    git push official master:our-master
-    ```
-
-    Αν έχετε και άλλα branches, π.χ. κάποιο που λέγεται `other-branch`,
-    μπορείτε να τα κάνετε `git push` και εκείνα.
-
-    ```
-    git push official other-branch
-    ```
-
-    Στη συνέχεια, μπορείτε να κάνετε ένα φρέσκο `git clone` και να δουλεύετε
-    στο παρόν repos.  Το δικό σας `master` branch θα λέγεται `our-master`.
-    Μπορείτε να το κάνετε rebase πάνω στο `master` του παρόντος repository,
-    με την παραπάνω διαδικασία:
-
-    ```
-    git checkout our-master
-    git checkout -b rebased-master
-    git rebase origin/master
-    ```
-
-    Αναλόγως αν έχετε ακολουθήσει το directory structure και πόσο τυχεροί
-    είστε, είναι πιθανό να χρειαστεί να επιλύσετε κάποια conflicts.
-
-    Στη συνέχεια, αν το παραπάνω rebase τελειώσει επιτυχώς, μπορείτε να
-    μεταφέρετε το αποτέλεσμα στο master branch και να ξεφορτωθείτε τα
-    πλέον άχρηστα branches
-
-    ```
-    git checkout master
-    git merge rebased-master
-    git branch -d rebased-master
-    git branch -D our-master
-    ```
+### Required Initial Steps
+1. `git clone https://github.com/ntua/TL19-11.git`
+2. Install [Python 3.8.1+](https://www.python.org/)
+3. Install [pip](https://pypi.org/) or [conda](https://docs.conda.io/en/latest/)
+4. Using conda or pip install the following dependandies:
+`conda install daphne django django-sslserver djangorestframework djangorestframework-csv mysql-connector-c mysql-connector-python mysqlclient openssl pip pytest python python-coreapi requests twisted`
+5. Install [MariaDB](https://mariadb.org/) or any other Django compatible db server
+6. Start the Database
+7. Setup the required a superuser named django and create a db named energy. Update the db and password settings in `settings.py`.
+8. `python manage.py makemigrations`
+9. `python manage.py migrate`
+10. Create at least one superuser `python manage.py createsuperuser` 
+11. `python manage.py runserver`
+or
+`daphne -e ssl:8765:privateKey=key.pem:certKey=certificate.pem  nexuselectric.asgi:application -b 0.0.0.0`
+12. Insert referance table data into DB
+13. Insert the other data using the provided CLI or API
 
 
-## Directory structure
+### RESTful API
+![](http://g.recordit.co/E2z9XXHaUm.gif)Example calls:
+`curl -X POST -d"username=admin" -d"password=321nimda"  https://localhost:8765/energy/api/Login -k`
 
-Δομήστε τα παραδοτέα σας ως εξής.  Με αστεράκι (\*) είναι σημειωμένα όσα
-παραδοτέα είναι υποχρεωτικά μόνο για πολυπληθείς ομάδες (βλ. οδηγίες στο
-  moodle και στο [αρχείο παραδοτέων](deliverables.docx)).
-Η ίδια δομή υπάρχει στο [template repository](https://github.com/saikos/softeng19b)
-που παρουσίασε στο μάθημα ο κ. Σαΐδης.
+`curl -X GET https://127.0.0.1:8765/energy/api/ActualTotalLoad/Austria/PT15M/year/2018?format=json -H 'X-OBSERVATORY-AUTH: 045bf23ff537a1542a342fbba6f59b2c86c2e374' -k`
 
-**/documentation**
-- Documentation: Διαγράμματα UML Activity (in ONE vpp file).
-- Documentation: Διαγράμματα UML Class (in ONE vpp file).
-- Documentation: Διαγράμματα UML Component (in ONE vpp file).
-- Documentation: Διαγράμματα UML Deployment (in ONE vpp file).
-- Documentation: Διαγράμματα UML Sequence (in ONE vpp file).
-- Documentation: Εγγραφο SRS - Software Requirements Specification.
-- Documentation: Εγγραφο StRS - Stakeholders Requirements Specification.
+### Command Line Interface
+![](http://g.recordit.co/nw6b8fDh5f.gif)
+Examples:
+`./energy_group11 -h`
+`./energy_group11 Login --username admin --passw 321nimda`
+`./energy_group11 ActualTotalLoad --area Austria --timeres PT15M --year 2018`
 
-**/back-end**
-- Code-testing: Back-end functional tests.
-- Code-testing: Back-end unit tests.
-- Code-testing: RESTful API.
-- Code-testing: Ανάλυση επιδόσεων του REST API ("benchmarking") (\*).
-- Code-testing: Λειτουργίες χρέωσης του REST API (\*).
-- Code-testing: Πηγαίος κώδικας εφαρμογής για εισαγωγή, διαχείριση και πρόσβαση σε πρωτογενή δεδομένα (backend).
-
-**/cli-client**
-- Code-testing: CLI functional tests.
-- Code-testing: CLI unit tests.
-- Code-testing: Command line interface (CLI).
-- Code-testing: Ανάλυση επιδόσεων του REST API ("benchmarking") (\*).
-- Code-testing: Λειτουργίες χρέωσης του REST API (\*).
-
-**/front-end**
-- Code-testing: Front-end tests.
-- Code-testing: Front-end παρουσίασης δεδομένων σε περιβάλλον web.
-- Code-testing: Ανάλυση επιδόσεων του REST API ("benchmarking") (\*).
-- Code-testing: Λειτουργίες χρέωσης του REST API (\*).
-
-**/mobile-app**
-- Code-testing: Mobile app tests (\*).
-- Code-testing: Mobile εφαρμογή παρουσίασης δεδομένων σε smartphone (\*).

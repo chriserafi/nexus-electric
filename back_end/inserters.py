@@ -1,5 +1,15 @@
 from django.db import connection
+from back_end.parsers import CSVParser
 
+def batch_import(file_obj, model, db_table):
+        #file_obj = request.data['file']
+        barser = CSVParser()
+        datata = barser.parse(file_obj.file)
+        rec_in_file = barser.total_records_in_file
+        rec_imported = importer(datata, db_table)
+        totalRecords = model.objects.all().count()
+        return {'totalRecordsInFile': rec_in_file, 'totalRecordsImported': rec_imported,
+                'totalRecordsInDatabase': totalRecords}
 
 def importer(data, TABLE_NAME):
     #create query

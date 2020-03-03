@@ -1,5 +1,4 @@
 from django.test import TestCase
-from django.utils import timezone
 from rest_framework.test import APITestCase, RequestsClient, APIRequestFactory
 from collections import OrderedDict
 import json
@@ -8,8 +7,9 @@ from back_end.serializers import*
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APIClient
 import requests
-
-BASE_URL = 'http://localhost:8765/energy/api/'
+import datetime
+from django.utils import timezone
+BASE_URL = 'https://localhost:8765/energy/api/'
 
 
 class TestSuppEndpoints(APITestCase):

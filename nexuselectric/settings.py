@@ -39,9 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'front_end.apps.FrontEndConfig',
     'back_end.apps.BackEndConfig',
-    'cli_client.apps.CliClientConfig',
     'rest_framework',
     'rest_framework.authtoken',
+    'sslserver',
 ]
 
 MIDDLEWARE = [
@@ -59,8 +59,8 @@ ROOT_URLCONF = 'nexuselectric.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
+        'DIRS': [os.path.join(BASE_DIR, 'front_end/templates/html')],
+        'APP_DIRS': False,
         'OPTIONS': {
             'context_processors': [
                 'django.template.context_processors.debug',
@@ -138,7 +138,13 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
 STATIC_URL = '/static/'
+
+#STATICFILES_DIRS = [
+#    os.path.join(BASE_DIR, 'front_end/static')
+#]
 
 # REST-FRAMEWORK
 REST_FRAMEWORK = {
