@@ -9,7 +9,7 @@ import os
 import requests
 import json
 
-BASE_API_URL = 'http://localhost:8888/energy/api/'
+BASE_API_URL = 'https://localhost:8765/energy/api/'
 BASE_LOCAL_URL = 'http://localhost:8888/energy/'
 
 
@@ -39,7 +39,7 @@ class LoginView(APIView):
             {
                 'username' : request.data['username'],
                 'password' : request.data['password']
-            }
+            },verify=False
         )
 
         data = response.json()
