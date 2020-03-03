@@ -6,16 +6,7 @@
 This project aims to provide a web-based elecricity market data management platform, which will 
 allow users to download, analyze and visualize open datasets from the [ENTSO-E Transparency Platform](https://transparency.entsoe.eu) via RESTful Web APIs.
 
-## :question: Project Description
 
-
-
-This project aims to provide a web-based elecricity market data management platform, which will
-
-allow users to download, analyze and visualize open datasets from the [ENTSO-E Transparency Platform](https://transparency.entsoe.eu) via RESTful Web APIs.
-
-  
-  
 
 _This repository hosts the [Software Engineering](https://courses.softlab.ntua.gr/softeng/2019b/) assignment for NTUA Course "Software Engineering" (Fall 2019)._
 
