@@ -105,3 +105,6 @@ Examples:
 `./energy_group11 ActualTotalLoad --area Austria --timeres PT15M --year 2018`
 
 
+### Web Application Frontend
+![](https://s7.gifyu.com/images/Webp.net-gifmaker0d44380e2c70431f.gif)
+
