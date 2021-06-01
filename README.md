@@ -30,7 +30,7 @@ This project was curated by "**BringItOhm**" team comprising of (in alphabetical
 
 * [Panagiotaras Ilias](https://github.com/iliaspan) (el15746@central.ntua.gr)
 
-* [Serafeidis Christos](https://github.com/chris-sera) (el15053@central.ntua.gr)
+* [Serafeidis Christos](https://github.com/chriserafi) (el15053@central.ntua.gr)
 
   
   
